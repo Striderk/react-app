@@ -5,24 +5,33 @@ import Person from './Person/Person';
 class App extends Component {
   state = {
     persons: [
-      { name: 'Max', age: 28 },
-      { name: 'Manu', age: 29 },
-      { name: 'Stephanie', age: 26 }
+      { id: '1', name: 'Max', age: 28 },
+      { id: '2', name: 'Manu', age: 29 },
+      { id: '3', name: 'Stephanie', age: 26 }
     ],
     otherState: 'some other value',
     showPersons: false
   }
 
 
-  nameChangedHandler = (event) => {
-    this.setState( {
-      persons: [
-        { name: 'Max', age: 28 },
-        // input element
-        { name: event.target.value, age: 29 },
-        { name: 'Stephanie', age: 26 }
-      ]
-    } )
+  nameChangedHandler = (event, id) => {
+
+    const personIndex = this.state.persons.findIndex(p => {
+      return p.id === id;
+    });
+
+    const person = {
+      // spread operator
+      ...this.state.persons[personIndex]
+    };
+
+    person.name = event.target.value;
+
+    const persons = [...this.state.persons];
+    persons[personIndex] = person;
+
+
+    this.setState({persons: persons});
   }
 
   deletePersonHandler = (personIndex) => {
@@ -59,10 +68,13 @@ class App extends Component {
             return <Person
             click = {() => this.deletePersonHandler(index)}
             name={person.name}
-            age={person.age} />
+            age={person.age}
+            key={person.id}
+            changed={(event)=>this.nameChangedHandler(event, person.id)} />
           })}
         </div>
       );
+
     }
     return (
       <div className="App">
